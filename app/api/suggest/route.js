@@ -8,7 +8,6 @@ export async function POST(req) {
     });
   }
 
-  const prompt = `Please review the following resume content and suggest improvements, formatting tips, and job-specific recommendations:\n\n${text}`;
 
   try {
     const aiRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
