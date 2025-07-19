@@ -1,103 +1,82 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import { UploadForm } from "@/components/UploadForm";
+import { extractTextFromPDF } from "@/utils/parseResume";
+import Suggestions from "@/components/Suggestions";
+// import { PdfPreview } from "@/components/PdfPreview";
+
+
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [resumeText, setResumeText] = useState("");
+  const [file, setFile] = useState(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleUpload = async (file) => {
+    if (file.type === "application/pdf") {
+      setFile(file)
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const text = await extractTextFromPDF(arrayBuffer);
+        setResumeText(text);
+      } catch (err) {
+        console.error("PDF parsing error:", err);
+        alert("Failed to extract text from PDF.");
+      }
+    } else {
+      alert("Only PDF parsing supported right now.");
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-blue-100 to-white p-6">
+       {/* Hero Section */}
+       <section className="text-center py-10">
+        <h1 className="text-4xl font-bold text-blue-700 mb-4">
+          AI-Powered Resume Enhancer
+        </h1>
+        <p className="text-lg text-gray-700 max-w-xl mx-auto">
+          Upload your resume and get instant AI-driven suggestions to make it job-ready.
+        </p>
+      </section>
+     {/* Upload Form */}
+      <section className="max-w-xl mx-auto mt-8">
+      <UploadForm onUpload={handleUpload} />
+
+      </section>
+       {/* Suggestions */}
+      {resumeText && (
+        
+        <section className="max-w-3xl mx-auto mt-10">
+          <Suggestions text={resumeText} />
+
+        </section>
+        )}
+
+         {/* Show PDF preview */}
+      {/* {file && <PdfPreview file={file} />} */}
+        {/* How it Works */}
+           <section className="mt-20 text-center">
+        <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white shadow-lg p-4 rounded-lg">
+            <h3 className="font-bold text-blue-600 mb-2">1. Upload</h3>
+            <p>Choose your resume in PDF format.</p>
+          </div>
+          <div className="bg-white shadow-lg p-4 rounded-lg">
+            <h3 className="font-bold text-blue-600 mb-2">2. Analyze</h3>
+            <p>AI reads and understands your resume content.</p>
+          </div>
+          <div className="bg-white shadow-lg p-4 rounded-lg">
+            <h3 className="font-bold text-blue-600 mb-2">3. Improve</h3>
+            <p>Get real-time feedback and improvement suggestions.</p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </section>
+       {/* Footer */}
+      <footer className="mt-16 text-center text-gray-600 text-sm">
+        Made with 💡 using Next.js & OpenRouter | © 2025 Seema
       </footer>
-    </div>
+        
+    </main>
   );
 }
